@@ -1,0 +1,3 @@
+[submodule "3rdparty/dfu-programmer"]
+	path = 3rdparty/dfu-programmer
+	url = https://github.com/szszszsz/dfu-programmer.git
