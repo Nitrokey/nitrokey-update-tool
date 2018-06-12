@@ -23,6 +23,18 @@ private slots:
 
     void on_actionAbout_triggered();
 
+    void on_actionNitrokey_Update_Tool_triggered();
+
+    void on_actionNitrokey_Storage_firmware_triggered();
+
+    void on_actionNitrokey_App_triggered();
+
+    void on_actionNitrokey_com_triggered();
+
+    void on_actionNitrokey_Support_Forum_triggered();
+
+    void on_btn_quit_clicked();
+
 private:
     Ui::MainWindow *ui;
     int32_t launchInThread(std::function<int32_t(void)> func);

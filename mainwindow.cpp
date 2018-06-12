@@ -22,7 +22,19 @@ struct AppState
 
 QString WELCOME = "Copyright 2018 Nitrokey UG (https://www.nitrokey.com). \n"
                   "This software is licensed under GNU General Public License v3. \n"
-                  "Source is available on https://github.com/Nitrokey/. \n"
+                  "Source is available on https://github.com/Nitrokey/nitrokey-update-tool. \n"
+                ;
+QString WELCOME2 =  "This tool allows to update Nitrokey Storage's firmware. "
+                    "<ol><li>- Please select "
+                    "<I>Configure -> Enable Firmware Update</I> in the Nitrokey App (see <i>Links->Nitrokey App</i>), </li>"
+                    "<li>- Download the .hex file of the latest firmware version (see <i>Links->Nitrokey Storage firmware</i>), </li>"
+                    "<li>- Select the firmware file with 'Select firmware file',"
+                    "<li>- Start the procedure by pressing 'Update firmware' button."
+                    "</ol>"
+
+//                    "<br />[1] https://github.com/Nitrokey/nitrokey-storage-firmware/releases/latest \n"
+//                    "<br />[2] https://www.nitrokey.com/download \n"
+//                    "<br />"
                   ;
 
 #include <QTimer>
@@ -34,6 +46,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     ui->text_log->appendPlainText("Nitrokey Production Tool started");
     ui->text_log->appendPlainText(WELCOME);
+    ui->text_log->appendHtml(WELCOME2);
+    ui->text_log->appendPlainText("");
     ui->btn_update->setEnabled(false);
 
     QTimer *timer_device_count = new QTimer(this);
@@ -56,6 +70,7 @@ void MainWindow::timer_device_count(){
     static QMutex mtx;
     static int last_status = -1;
 
+    ui->btn_quit->setEnabled(!state.in_progress);
     if (state.in_progress) return;
 
     state.device_connected_update_mode = connection.count_devices_in_update_mode() > 0;
@@ -127,6 +142,7 @@ void MainWindow::on_btn_update_clicked()
 
     state.in_progress = true; //FIXME use ScopeGuard/Exit later
     ui->btn_update->setEnabled(!state.in_progress);
+    ui->btn_quit->setEnabled(!state.in_progress);
 
 
     ui->progressBar->setValue(0);
@@ -229,4 +245,35 @@ void MainWindow::on_actionAbout_triggered()
 {
     AboutDialog a;
     a.exec();
+}
+
+#include <QDesktopServices>
+void MainWindow::on_actionNitrokey_Update_Tool_triggered()
+{
+    QDesktopServices::openUrl(QUrl("https://github.com/Nitrokey/nitrokey-update-tool/releases"));
+}
+
+void MainWindow::on_actionNitrokey_Storage_firmware_triggered()
+{
+    QDesktopServices::openUrl(QUrl("https://github.com/Nitrokey/nitrokey-storage-firmware/releases"));
+}
+
+void MainWindow::on_actionNitrokey_App_triggered()
+{
+    QDesktopServices::openUrl(QUrl("https://github.com/Nitrokey/nitrokey-app/releases"));
+}
+
+void MainWindow::on_actionNitrokey_com_triggered()
+{
+    QDesktopServices::openUrl(QUrl("https://www.nitrokey.com"));
+}
+
+void MainWindow::on_actionNitrokey_Support_Forum_triggered()
+{
+    QDesktopServices::openUrl(QUrl("https://support.nitrokey.com/c/nitrokey-support"));
+}
+
+void MainWindow::on_btn_quit_clicked()
+{
+    QApplication::quit();
 }
