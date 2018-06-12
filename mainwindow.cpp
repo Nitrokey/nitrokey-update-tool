@@ -117,6 +117,8 @@ int32_t MainWindow::launchInThread(std::function<int32_t(void)> func){
     return future.result();
 }
 
+#include "usbdriverinstaller.h"
+#include <QStringList>
 void MainWindow::on_btn_update_clicked()
 {
     int32_t result;
@@ -128,15 +130,40 @@ void MainWindow::on_btn_update_clicked()
 
 
     ui->progressBar->setValue(0);
+
+#ifdef Q_OS_WIN
+    {
+        static bool drivers_installed = false;
+        ui->progressBar->setValue(5);
+        if (!drivers_installed){
+            ui->text_log->appendPlainText("Installing USB drivers ...");
+            USBDriverInstaller installer;
+            QStringList debug;
+            int retcode = installer.install([&debug](QString s){ debug.append(s); });
+            if (retcode != 0){
+                for (auto d : debug){
+                    ui->text_log->appendPlainText("USB setup: " + d);
+                }
+                ui->text_log->appendPlainText("Installing USB drivers has failed. Please run the application with Administrator privileges and try again.");
+                ui->text_log->appendPlainText(QString("Error code %1").arg(retcode));
+                ui->text_log->appendPlainText(QString("Output\n ```\n%1\n```").arg(QString::fromUtf8(installer.output.data())));
+                ui->text_log->appendPlainText(QString("Output (err)\n```\n%1\n```").arg(QString::fromUtf8(installer.output_err.data())));
+                ui->progressBar->setValue(0);
+                state.in_progress = false;
+                return;
+            }
+            drivers_installed = true;
+            ui->text_log->appendPlainText("   USB drivers installed.");
+        }
+    }
+#endif
+
     result = init();    
     if (result != 0){
         ui->text_log->appendPlainText(QString("WARNING: Device initialization has failed (code %1).").arg(result));
         ui->text_log->appendPlainText("Device could not be initialized. Cancelling the procedure.");
 #ifdef Q_OS_LINUX
         ui->text_log->appendPlainText("Please run the tool with root privileges (e.g. using 'sudo') or install udev rules.");
-#endif
-#ifdef Q_OS_WIN
-        ui->text_log->appendPlainText("Please install USB drivers for the device. Follow instructions from the release site. See http://zadig.akeo.ie/.");
 #endif
         ui->progressBar->setValue(0);
         state.in_progress = false;
