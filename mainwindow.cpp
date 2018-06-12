@@ -132,6 +132,12 @@ int32_t MainWindow::launchInThread(std::function<int32_t(void)> func){
     return future.result();
 }
 
+void MainWindow::closeEvent(QCloseEvent * event)
+{
+    if (state.in_progress)
+        event->ignore();
+}
+
 #include "usbdriverinstaller.h"
 #include <QStringList>
 void MainWindow::on_btn_update_clicked()

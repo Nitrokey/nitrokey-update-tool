@@ -38,6 +38,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     int32_t launchInThread(std::function<int32_t(void)> func);
+    void closeEvent(QCloseEvent * event);
 };
 
 #endif // MAINWINDOW_H
