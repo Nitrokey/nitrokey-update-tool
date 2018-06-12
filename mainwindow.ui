@@ -75,6 +75,13 @@
             </property>
            </widget>
           </item>
+          <item row="3" column="0">
+           <widget class="QPushButton" name="btn_quit">
+            <property name="text">
+             <string>Quit</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
        </item>
@@ -167,7 +174,7 @@
      <x>0</x>
      <y>0</y>
      <width>829</width>
-     <height>20</height>
+     <height>19</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -177,7 +184,18 @@
     <addaction name="actionAbout"/>
     <addaction name="actionQuit"/>
    </widget>
+   <widget class="QMenu" name="menuLinks">
+    <property name="title">
+     <string>Links</string>
+    </property>
+    <addaction name="actionNitrokey_App"/>
+    <addaction name="actionNitrokey_Storage_firmware"/>
+    <addaction name="actionNitrokey_Update_Tool"/>
+    <addaction name="actionNitrokey_com"/>
+    <addaction name="actionNitrokey_Support_Forum"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuLinks"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionQuit">
@@ -188,6 +206,31 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
+   </property>
+  </action>
+  <action name="actionNitrokey_App">
+   <property name="text">
+    <string>Nitrokey App</string>
+   </property>
+  </action>
+  <action name="actionNitrokey_Storage_firmware">
+   <property name="text">
+    <string>Nitrokey Storage firmware</string>
+   </property>
+  </action>
+  <action name="actionNitrokey_Update_Tool">
+   <property name="text">
+    <string>Nitrokey Update Tool</string>
+   </property>
+  </action>
+  <action name="actionNitrokey_com">
+   <property name="text">
+    <string>Nitrokey.com</string>
+   </property>
+  </action>
+  <action name="actionNitrokey_Support_Forum">
+   <property name="text">
+    <string>Nitrokey Support Forum</string>
    </property>
   </action>
  </widget>
