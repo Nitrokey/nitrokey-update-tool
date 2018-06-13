@@ -24,6 +24,18 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 
+VERSION = 0.5.0
+VERSION_STR = 0.5
+QMAKE_TARGET_COMPANY = Nitrokey
+QMAKE_TARGET_PRODUCT = Nitrokey Update Tool
+QMAKE_TARGET_DESCRIPTION = Update Nitrokey Storage firmware
+
+QMAKE_TARGET_COPYRIGHT = Copyright (c) 2018 Nitrokey UG
+
+
+DEFINES += GIT_VERSION=\"\\\"$$system(git describe --abbrev=4 --always)\\\"\" GUI_VERSION="\\\"$${VERSION_STR}\\\""
+message($$DEFINES)
+
 SOURCES += \
         main.cpp \
         mainwindow.cpp \
