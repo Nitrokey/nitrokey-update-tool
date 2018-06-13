@@ -49,7 +49,8 @@ HEADERS += \
     usb_connection.h \
     aboutdialog.h \
     usbdriverinstaller.h \
-    windowscheckprivileges.h
+    windowscheckprivileges.h \
+    version.h
 
 FORMS += \
         mainwindow.ui \
