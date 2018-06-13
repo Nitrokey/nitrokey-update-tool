@@ -277,6 +277,8 @@ void MainWindow::on_btn_update_clicked()
     }
 
     if (result != 0){
+        //Launch command might return failure in certain environments, however the device accepts it and reconnects.
+        //Let's check if device has launched before reporting error.
         if (connection.count_devices_in_production_mode() < 1){
             logUI(QString("WARNING: Launch device result: %1").arg(result));
             ui->progressBar->setValue(0);
