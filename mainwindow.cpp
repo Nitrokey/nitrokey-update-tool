@@ -44,9 +44,12 @@ QString WELCOME2 =  "This tool allows to update Nitrokey Storage's firmware. "
 //                    "<br />"
                   ;
 
+#include "version.h"
+
 #include <QTimer>
 #include "windowscheckprivileges.h"
 #include <QMessageBox>
+#include <QStatusBar>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -67,6 +70,8 @@ MainWindow::MainWindow(QWidget *parent) :
                              "Application is run without Admin privileges, which are required to operate. Please run it again with Administrator privileges.");
     }
     #endif
+
+    statusBar()->showMessage("Nitrokey Update Tool version " GUI_VERSION " (" GIT_VERSION ")" );
 }
 
 #include "lib_implementation.h"
