@@ -29,13 +29,15 @@ SOURCES += \
         mainwindow.cpp \
     usb_connection.cpp \
     aboutdialog.cpp \
-    usbdriverinstaller.cpp
+    usbdriverinstaller.cpp \
+    windowscheckprivileges.cpp
 
 HEADERS += \
         mainwindow.h \
     usb_connection.h \
     aboutdialog.h \
-    usbdriverinstaller.h
+    usbdriverinstaller.h \
+    windowscheckprivileges.h
 
 FORMS += \
         mainwindow.ui \

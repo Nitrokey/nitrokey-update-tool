@@ -45,6 +45,8 @@ QString WELCOME2 =  "This tool allows to update Nitrokey Storage's firmware. "
                   ;
 
 #include <QTimer>
+#include "windowscheckprivileges.h"
+#include <QMessageBox>
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainWindow)
@@ -58,6 +60,13 @@ MainWindow::MainWindow(QWidget *parent) :
     QTimer *timer_device_count = new QTimer(this);
     connect(timer_device_count, SIGNAL(timeout()), this, SLOT(timer_device_count()));
     timer_device_count->start(2000);
+
+    #ifdef Q_OS_WIN
+    if(!WindowsCheckPrivileges::IsElevated()){
+        QMessageBox::warning(nullptr, "No Admin privileges",
+                             "Application is run without Admin privileges, which are required to operate. Please run it again with Administrator privileges.");
+    }
+    #endif
 }
 
 #include "lib_implementation.h"
