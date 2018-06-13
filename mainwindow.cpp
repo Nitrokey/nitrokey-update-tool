@@ -32,11 +32,11 @@ QString WELCOME = "Copyright 2018 Nitrokey UG (https://www.nitrokey.com). \n"
                   "Source is available on https://github.com/Nitrokey/nitrokey-update-tool. \n"
                 ;
 QString WELCOME2 =  "This tool allows to update Nitrokey Storage's firmware. "
-                    "<ol><li>- Please select "
-                    "<I>Configure -> Enable Firmware Update</I> in the Nitrokey App (see <i>Links->Nitrokey App</i>), </li>"
-                    "<li>- Download the .hex file of the latest firmware version (see <i>Links->Nitrokey Storage firmware</i>), </li>"
-                    "<li>- Select the firmware file with 'Select firmware file',"
-                    "<li>- Start the procedure by pressing 'Update firmware' button."
+                    "<ol><li>1. Please select "
+                    "<I>Configure -> Enable Firmware Update</I> in the Nitrokey App (select <i>Links menu->Nitrokey App</i> to open download site), </li>"
+                    "<li>2. Download the .hex file of the latest firmware version (select <i>Links menu->Nitrokey Storage firmware</i> to open download site), </li>"
+                    "<li>3. Select the firmware file with 'Select firmware file',"
+                    "<li>4. Start the procedure by pressing 'Update firmware' button."
                     "</ol>"
 
 //                    "<br />[1] https://github.com/Nitrokey/nitrokey-storage-firmware/releases/latest \n"
@@ -108,7 +108,7 @@ void MainWindow::timer_device_count(){
     ui->cb_device_connected->setChecked(state.device_connected.update_mode);
     if (last_status != state.device_connected_raw){
         if(state.device_connected.production_mode){
-            logUI("Nitrokey Storage detected in Production mode. Please enable Firmware Update mode in Nitrokey App first.");
+            logUI("Nitrokey Storage detected in Production mode. Please enable Firmware Update mode in Nitrokey App first (Configure -> Enable Firmware Update).");
         } else if(state.device_connected.update_mode){
             logUI("Nitrokey Storage detected in Update mode.");
         } else {
