@@ -87,12 +87,12 @@ void MainWindow::logUI(QString msg){
     }
 }
 
+static USB_connection connection;
+
 #include "usb_connection.h"
 #include <QMutex>
 #include <QMutexLocker>
-void MainWindow::timer_device_count(){
-    static USB_connection connection;
-    static QMutex mtx;
+void MainWindow::timer_device_count(){        
     static int last_status = -1;
 
     ui->btn_quit->setEnabled(!state.in_progress);
@@ -181,6 +181,7 @@ void MainWindow::on_btn_update_clicked()
     ui->btn_update->setEnabled(!state.in_progress);
     ui->btn_quit->setEnabled(!state.in_progress);
 
+    logUI("*** Update procedure started");
 
     ui->progressBar->setValue(0);
 
@@ -266,8 +267,26 @@ void MainWindow::on_btn_update_clicked()
     result = launchInThread([]()->int32_t {
          return launch();
     });
+
+    for (int i=0; i<2; i++){
+        ui->progressBar->setValue(85+i+1);
+        delay(1*1000);
+    }
+
     if (result != 0){
-        logUI(QString("WARNING: Launch device result: %1").arg(result));
+        if (connection.count_devices_in_production_mode() < 1){
+            logUI(QString("WARNING: Launch device result: %1").arg(result));
+            ui->progressBar->setValue(0);
+            state.in_progress = false;
+            return;
+        }
+    }
+
+    ui->progressBar->setValue(90);
+    if (connection.count_devices_in_production_mode() > 0){
+        logUI("Device connects in production mode.");
+    } else {
+        logUI("WARNING: Device has not responded in production mode.");
         ui->progressBar->setValue(0);
         state.in_progress = false;
         return;
@@ -275,6 +294,9 @@ void MainWindow::on_btn_update_clicked()
 
     ui->progressBar->setValue(100);
     state.in_progress = false;
+
+    logUI("*** Update procedure finished successfully");
+    logUI("");
 }
 
 #include "aboutdialog.h"
