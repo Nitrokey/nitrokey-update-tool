@@ -68,6 +68,7 @@ MainWindow::MainWindow(QWidget *parent) :
     if(!WindowsCheckPrivileges::IsElevated()){
         QMessageBox::warning(nullptr, "No Admin privileges",
                              "Application is run without Admin privileges, which are required to operate. Please run it again with Administrator privileges.");
+        QApplication::quit();
     }
     #endif
 
