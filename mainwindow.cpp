@@ -212,10 +212,13 @@ void MainWindow::on_btn_update_clicked()
     }
 #endif
 
+    ui->progressBar->setValue(7);
+
+    logUI("Connecting to device ...");
     result = init();    
     if (result != 0){
-        logUI(QString("WARNING: Device initialization has failed (code %1).").arg(result));
-        logUI("Device could not be initialized. Cancelling the procedure.");
+        logUI(QString("WARNING: Device connection has failed (code %1).").arg(result));
+        logUI("Device could not be connected. Cancelling the procedure.");
 #ifdef Q_OS_LINUX
         logUI("Please run the tool with root privileges (e.g. using 'sudo') or install udev rules.");
 #endif
