@@ -87,9 +87,9 @@ void MainWindow::logUI(QString msg){
     }
 }
 
+#include "usb_connection.h"
 static USB_connection connection;
 
-#include "usb_connection.h"
 #include <QMutex>
 #include <QMutexLocker>
 void MainWindow::timer_device_count(){        
@@ -104,11 +104,11 @@ void MainWindow::timer_device_count(){
     ui->cb_device_connected->setChecked(state.device_connected.update_mode);
     if (last_status != state.device_connected_raw){
         if(state.device_connected.production_mode){
-            logUI("Nitrokey Storage detected. Please enable firmware update mode in Nitrokey App first.");
+            logUI("Nitrokey Storage detected in Production mode. Please enable Firmware Update mode in Nitrokey App first.");
         } else if(state.device_connected.update_mode){
             logUI("Nitrokey Storage detected in Update mode.");
         } else {
-            logUI("No Storage device detected. Please insert Storage device in Update mode.");
+            logUI("No Nitrokey Storage device detected. Please insert Nitrokey Storage device.");
         }
         last_status = state.device_connected_raw;
     }
