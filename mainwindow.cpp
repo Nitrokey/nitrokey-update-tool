@@ -92,11 +92,15 @@ static USB_connection connection;
 
 #include <QMutex>
 #include <QMutexLocker>
+QMutex mtx;
+
 void MainWindow::timer_device_count(){        
     static int last_status = -1;
 
     ui->btn_quit->setEnabled(!state.in_progress);
     if (state.in_progress) return;
+
+    QMutexLocker lockguard(&mtx);
 
     state.device_connected.update_mode = connection.count_devices_in_update_mode() > 0;
     state.device_connected.production_mode = connection.count_devices_in_production_mode() > 0;
@@ -184,6 +188,9 @@ void MainWindow::on_btn_update_clicked()
     logUI("*** Update procedure started");
 
     ui->progressBar->setValue(0);
+    QMutexLocker lockguard(&mtx);
+
+    ui->progressBar->setValue(1);
 
 #ifdef Q_OS_WIN
     {
