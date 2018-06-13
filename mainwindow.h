@@ -39,6 +39,7 @@ private:
     Ui::MainWindow *ui;
     int32_t launchInThread(std::function<int32_t(void)> func);
     void closeEvent(QCloseEvent * event);
+    void logUI(QString msg);
 };
 
 #endif // MAINWINDOW_H
