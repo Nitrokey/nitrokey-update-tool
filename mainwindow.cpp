@@ -88,11 +88,11 @@ void MainWindow::logUI(QString msg){
 }
 
 #include "usb_connection.h"
+static USB_connection connection;
+
 #include <QMutex>
 #include <QMutexLocker>
-void MainWindow::timer_device_count(){
-    static USB_connection connection;
-    static QMutex mtx;
+void MainWindow::timer_device_count(){        
     static int last_status = -1;
 
     ui->btn_quit->setEnabled(!state.in_progress);
@@ -104,11 +104,11 @@ void MainWindow::timer_device_count(){
     ui->cb_device_connected->setChecked(state.device_connected.update_mode);
     if (last_status != state.device_connected_raw){
         if(state.device_connected.production_mode){
-            logUI("Nitrokey Storage detected. Please enable firmware update mode in Nitrokey App first.");
+            logUI("Nitrokey Storage detected in Production mode. Please enable Firmware Update mode in Nitrokey App first.");
         } else if(state.device_connected.update_mode){
             logUI("Nitrokey Storage detected in Update mode.");
         } else {
-            logUI("No Storage device detected. Please insert Storage device in Update mode.");
+            logUI("No Nitrokey Storage device detected. Please insert Nitrokey Storage device.");
         }
         last_status = state.device_connected_raw;
     }
@@ -181,6 +181,7 @@ void MainWindow::on_btn_update_clicked()
     ui->btn_update->setEnabled(!state.in_progress);
     ui->btn_quit->setEnabled(!state.in_progress);
 
+    logUI("*** Update procedure started");
 
     ui->progressBar->setValue(0);
 
@@ -211,10 +212,13 @@ void MainWindow::on_btn_update_clicked()
     }
 #endif
 
+    ui->progressBar->setValue(7);
+
+    logUI("Connecting to device ...");
     result = init();    
     if (result != 0){
-        logUI(QString("WARNING: Device initialization has failed (code %1).").arg(result));
-        logUI("Device could not be initialized. Cancelling the procedure.");
+        logUI(QString("WARNING: Device connection has failed (code %1).").arg(result));
+        logUI("Device could not be connected. Cancelling the procedure.");
 #ifdef Q_OS_LINUX
         logUI("Please run the tool with root privileges (e.g. using 'sudo') or install udev rules.");
 #endif
@@ -266,8 +270,28 @@ void MainWindow::on_btn_update_clicked()
     result = launchInThread([]()->int32_t {
          return launch();
     });
+
+    for (int i=0; i<2; i++){
+        ui->progressBar->setValue(85+i+1);
+        delay(1*1000);
+    }
+
     if (result != 0){
-        logUI(QString("WARNING: Launch device result: %1").arg(result));
+        //Launch command might return failure in certain environments, however the device accepts it and reconnects.
+        //Let's check if device has launched before reporting error.
+        if (connection.count_devices_in_production_mode() < 1){
+            logUI(QString("WARNING: Launch device result: %1").arg(result));
+            ui->progressBar->setValue(0);
+            state.in_progress = false;
+            return;
+        }
+    }
+
+    ui->progressBar->setValue(90);
+    if (connection.count_devices_in_production_mode() > 0){
+        logUI("Device connects in production mode.");
+    } else {
+        logUI("WARNING: Device has not responded in production mode.");
         ui->progressBar->setValue(0);
         state.in_progress = false;
         return;
@@ -275,6 +299,9 @@ void MainWindow::on_btn_update_clicked()
 
     ui->progressBar->setValue(100);
     state.in_progress = false;
+
+    logUI("*** Update procedure finished successfully");
+    logUI("");
 }
 
 #include "aboutdialog.h"
