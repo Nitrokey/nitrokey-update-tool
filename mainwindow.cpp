@@ -5,17 +5,24 @@ struct AppState
 {
     AppState() {
      firmware_file.selected = false;     
-     device_connected_update_mode = false;
+     device_connected.update_mode = false;
+     device_connected.production_mode = false;
      in_progress = false;
     }
 
     struct {
         bool selected;        
     } firmware_file;
-    bool device_connected_update_mode;
+    union{
+        struct {
+            bool update_mode :1;
+            bool production_mode :1;
+        } device_connected;
+        uint8_t device_connected_raw;
+    };
     bool in_progress;
     inline bool ready_to_update(){
-        return device_connected_update_mode && firmware_file.selected && !in_progress;
+        return device_connected.update_mode && firmware_file.selected && !in_progress;
     }
 } state;
 
@@ -44,10 +51,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-    ui->text_log->appendPlainText("Nitrokey Production Tool started");
-    ui->text_log->appendPlainText(WELCOME);
     ui->text_log->appendHtml(WELCOME2);
-    ui->text_log->appendPlainText("");
+    logUI("");
     ui->btn_update->setEnabled(false);
 
     QTimer *timer_device_count = new QTimer(this);
@@ -62,6 +67,17 @@ MainWindow::~MainWindow()
     deinit();
 }
 
+#include <QTime>
+void MainWindow::logUI(QString msg){
+    static QTime t;
+    if (!t.isValid()) t.start();
+    if (!msg.isEmpty()){
+        ui->text_log->appendPlainText( QString("[%1]: %2").arg(t.elapsed()/1000., 7).arg(msg));
+    } else {
+        ui->text_log->appendPlainText("");
+    }
+}
+
 #include "usb_connection.h"
 #include <QMutex>
 #include <QMutexLocker>
@@ -73,13 +89,19 @@ void MainWindow::timer_device_count(){
     ui->btn_quit->setEnabled(!state.in_progress);
     if (state.in_progress) return;
 
-    state.device_connected_update_mode = connection.count_devices_in_update_mode() > 0;
+    state.device_connected.update_mode = connection.count_devices_in_update_mode() > 0;
+    state.device_connected.production_mode = connection.count_devices_in_production_mode() > 0;
 
-    ui->cb_device_connected->setChecked(state.device_connected_update_mode);
-    if (last_status != state.device_connected_update_mode){
-        ui->text_log->appendPlainText(QString("Device connected in update mode: %1").arg(
-                                          state.device_connected_update_mode ? "true" : "false"));
-        last_status = state.device_connected_update_mode;
+    ui->cb_device_connected->setChecked(state.device_connected.update_mode);
+    if (last_status != state.device_connected_raw){
+        if(state.device_connected.production_mode){
+            logUI("Nitrokey Storage detected. Please enable firmware update mode in Nitrokey App first.");
+        } else if(state.device_connected.update_mode){
+            logUI("Nitrokey Storage detected in Update mode.");
+        } else {
+            logUI("No Storage device detected. Please insert Storage device in Update mode.");
+        }
+        last_status = state.device_connected_raw;
     }
 
     ui->btn_update->setEnabled(state.ready_to_update());
@@ -102,7 +124,7 @@ void MainWindow::on_btn_select_file_clicked()
         return check_file.exists() && check_file.isFile();
     });
     ui->cb_file_selected->setChecked(state.firmware_file.selected);
-    ui->text_log->appendPlainText("Set file " + filename);
+    logUI("Set file " + filename);
 }
 
 inline void delay(int millisecondsWait)
@@ -158,34 +180,34 @@ void MainWindow::on_btn_update_clicked()
         static bool drivers_installed = false;
         ui->progressBar->setValue(5);
         if (!drivers_installed){
-            ui->text_log->appendPlainText("Installing USB drivers ...");
+            logUI("Installing USB drivers ...");
             USBDriverInstaller installer;
             QStringList debug;
             int retcode = installer.install([&debug](QString s){ debug.append(s); });
             if (retcode != 0){
                 for (auto d : debug){
-                    ui->text_log->appendPlainText("USB setup: " + d);
+                    logUI("USB setup: " + d);
                 }
-                ui->text_log->appendPlainText("Installing USB drivers has failed. Please run the application with Administrator privileges and try again.");
-                ui->text_log->appendPlainText(QString("Error code %1").arg(retcode));
-                ui->text_log->appendPlainText(QString("Output\n ```\n%1\n```").arg(QString::fromUtf8(installer.output.data())));
-                ui->text_log->appendPlainText(QString("Output (err)\n```\n%1\n```").arg(QString::fromUtf8(installer.output_err.data())));
+                logUI("Installing USB drivers has failed. Please run the application with Administrator privileges and try again.");
+                logUI(QString("Error code %1").arg(retcode));
+                logUI(QString("Output\n ```\n%1\n```").arg(QString::fromUtf8(installer.output.data())));
+                logUI(QString("Output (err)\n```\n%1\n```").arg(QString::fromUtf8(installer.output_err.data())));
                 ui->progressBar->setValue(0);
                 state.in_progress = false;
                 return;
             }
             drivers_installed = true;
-            ui->text_log->appendPlainText("   USB drivers installed.");
+            logUI("   USB drivers installed.");
         }
     }
 #endif
 
     result = init();    
     if (result != 0){
-        ui->text_log->appendPlainText(QString("WARNING: Device initialization has failed (code %1).").arg(result));
-        ui->text_log->appendPlainText("Device could not be initialized. Cancelling the procedure.");
+        logUI(QString("WARNING: Device initialization has failed (code %1).").arg(result));
+        logUI("Device could not be initialized. Cancelling the procedure.");
 #ifdef Q_OS_LINUX
-        ui->text_log->appendPlainText("Please run the tool with root privileges (e.g. using 'sudo') or install udev rules.");
+        logUI("Please run the tool with root privileges (e.g. using 'sudo') or install udev rules.");
 #endif
         ui->progressBar->setValue(0);
         state.in_progress = false;
@@ -193,14 +215,14 @@ void MainWindow::on_btn_update_clicked()
     }
     ui->progressBar->setValue(10);
 
-    ui->text_log->appendPlainText("Erasing device ...");
+    logUI("Erasing device ...");
 
     result = launchInThread([]()->int32_t {
             return erase();
     });
 
     if (result != 0){
-        ui->text_log->appendPlainText(QString("WARNING: Erasing device result: %1").arg(result));
+        logUI(QString("WARNING: Erasing device result: %1").arg(result));
         ui->progressBar->setValue(0);
         state.in_progress = false;
         return;
@@ -210,7 +232,7 @@ void MainWindow::on_btn_update_clicked()
     delay(1*1000);
     ui->progressBar->setValue(21);
 
-    ui->text_log->appendPlainText("Flashing device ...");
+    logUI("Flashing device ...");
 
     std::string path = ui->edit_firmware_file->text().toStdString();
     result = launchInThread([path]()->int32_t {
@@ -218,7 +240,7 @@ void MainWindow::on_btn_update_clicked()
     });
 
     if (result != 0){
-        ui->text_log->appendPlainText(QString("WARNING: Flashing device result: %1").arg(result));
+        logUI(QString("WARNING: Flashing device result: %1").arg(result));
         ui->progressBar->setValue(0);
         state.in_progress = false;
         return;
@@ -231,12 +253,12 @@ void MainWindow::on_btn_update_clicked()
         delay(1*1000);
     }
 
-    ui->text_log->appendPlainText("Launching device to production mode");
+    logUI("Launching device to production mode");
     result = launchInThread([]()->int32_t {
          return launch();
     });
     if (result != 0){
-        ui->text_log->appendPlainText(QString("WARNING: Launch device result: %1").arg(result));
+        logUI(QString("WARNING: Launch device result: %1").arg(result));
         ui->progressBar->setValue(0);
         state.in_progress = false;
         return;
