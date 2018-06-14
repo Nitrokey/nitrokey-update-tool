@@ -113,7 +113,6 @@ void MainWindow::timer_device_count(){
     state.device_connected.update_mode = connection.count_devices_in_update_mode() > 0;
     state.device_connected.production_mode = connection.count_devices_in_production_mode() > 0;
 
-    ui->cb_device_connected->setChecked(state.device_connected.update_mode);
     if (last_status != state.device_connected_raw){
         if(state.device_connected.production_mode && !state.finished_with_success){
             logUI("Nitrokey Storage detected in Production mode. Please enable Firmware Update mode in Nitrokey App first (Configure -> Enable Firmware Update).");
@@ -143,8 +142,7 @@ void MainWindow::on_btn_select_file_clicked()
     state.firmware_file.selected = launchInThread([&filename](){
         QFileInfo check_file(filename);
         return check_file.exists() && check_file.isFile();
-    });
-    ui->cb_file_selected->setChecked(state.firmware_file.selected);
+    });    
     logUI("Set file " + filename);
 }
 
