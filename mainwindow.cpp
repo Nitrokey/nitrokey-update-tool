@@ -325,9 +325,6 @@ void MainWindow::on_actionAbout_triggered()
     a.exec();
 }
 
-#include <QDesktopServices>
-//QDesktopServices::openUrl(QUrl("https://support.nitrokey.com/c/nitrokey-support"));
-
 void MainWindow::on_btn_quit_clicked()
 {
     QApplication::quit();
