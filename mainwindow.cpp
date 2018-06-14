@@ -326,30 +326,7 @@ void MainWindow::on_actionAbout_triggered()
 }
 
 #include <QDesktopServices>
-void MainWindow::on_actionNitrokey_Update_Tool_triggered()
-{
-    QDesktopServices::openUrl(QUrl("https://github.com/Nitrokey/nitrokey-update-tool/releases"));
-}
-
-void MainWindow::on_actionNitrokey_Storage_firmware_triggered()
-{
-    QDesktopServices::openUrl(QUrl("https://github.com/Nitrokey/nitrokey-storage-firmware/releases"));
-}
-
-void MainWindow::on_actionNitrokey_App_triggered()
-{
-    QDesktopServices::openUrl(QUrl("https://github.com/Nitrokey/nitrokey-app/releases"));
-}
-
-void MainWindow::on_actionNitrokey_com_triggered()
-{
-    QDesktopServices::openUrl(QUrl("https://www.nitrokey.com"));
-}
-
-void MainWindow::on_actionNitrokey_Support_Forum_triggered()
-{
-    QDesktopServices::openUrl(QUrl("https://support.nitrokey.com/c/nitrokey-support"));
-}
+//QDesktopServices::openUrl(QUrl("https://support.nitrokey.com/c/nitrokey-support"));
 
 void MainWindow::on_btn_quit_clicked()
 {
