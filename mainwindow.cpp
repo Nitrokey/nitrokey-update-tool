@@ -8,6 +8,7 @@ struct AppState
      device_connected.update_mode = false;
      device_connected.production_mode = false;
      in_progress = false;
+     finished_with_success = false;
     }
 
     struct {
@@ -21,6 +22,7 @@ struct AppState
         uint8_t device_connected_raw;
     };
     bool in_progress;
+    bool finished_with_success;
     inline bool ready_to_update(){
         return device_connected.update_mode && firmware_file.selected && !in_progress;
     }
@@ -113,11 +115,11 @@ void MainWindow::timer_device_count(){
 
     ui->cb_device_connected->setChecked(state.device_connected.update_mode);
     if (last_status != state.device_connected_raw){
-        if(state.device_connected.production_mode){
+        if(state.device_connected.production_mode && !state.finished_with_success){
             logUI("Nitrokey Storage detected in Production mode. Please enable Firmware Update mode in Nitrokey App first (Configure -> Enable Firmware Update).");
         } else if(state.device_connected.update_mode){
             logUI("Nitrokey Storage detected in Update mode.");
-        } else {
+        } else if (!state.finished_with_success){
             logUI("No Nitrokey Storage device detected. Please insert Nitrokey Storage device.");
         }
         last_status = state.device_connected_raw;
@@ -311,10 +313,11 @@ void MainWindow::on_btn_update_clicked()
     }
 
     ui->progressBar->setValue(100);
+    state.finished_with_success = true;
     state.in_progress = false;
 
     logUI("*** Update procedure finished successfully");
-    logUI("");
+    logUI("");    
 }
 
 #include "aboutdialog.h"
