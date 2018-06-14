@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>898</width>
-    <height>478</height>
+    <width>781</width>
+    <height>456</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -41,41 +41,28 @@
          <property name="title">
           <string>Status</string>
          </property>
-         <layout class="QFormLayout" name="formLayout">
+         <layout class="QGridLayout" name="gridLayout_3">
           <item row="0" column="0">
-           <widget class="QCheckBox" name="cb_file_selected">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>Firmware file selected</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0" colspan="2">
-           <widget class="QCheckBox" name="cb_device_connected">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
-            <property name="text">
-             <string>Device in update mode connected</string>
-            </property>
-            <property name="checkable">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
            <widget class="QPushButton" name="btn_update">
             <property name="text">
              <string>Update firmware</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="0" column="1">
+           <widget class="QLabel" name="l_instructions_link">
+            <property name="text">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;a href=&quot;https://www.nitrokey.com/en/documentation/firmware-update-storage&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;Instructions and firmware&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+            <property name="openExternalLinks">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
            <widget class="QPushButton" name="btn_quit">
             <property name="text">
              <string>Quit</string>
@@ -120,7 +107,7 @@
           <item row="2" column="0">
            <widget class="QLabel" name="label_2">
             <property name="text">
-             <string>Progress</string>
+             <string>Progress:</string>
             </property>
            </widget>
           </item>
@@ -173,7 +160,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>898</width>
+     <width>781</width>
      <height>20</height>
     </rect>
    </property>
@@ -184,18 +171,7 @@
     <addaction name="actionAbout"/>
     <addaction name="actionQuit"/>
    </widget>
-   <widget class="QMenu" name="menuLinks">
-    <property name="title">
-     <string>Links</string>
-    </property>
-    <addaction name="actionNitrokey_App"/>
-    <addaction name="actionNitrokey_Storage_firmware"/>
-    <addaction name="actionNitrokey_Update_Tool"/>
-    <addaction name="actionNitrokey_com"/>
-    <addaction name="actionNitrokey_Support_Forum"/>
-   </widget>
    <addaction name="menuFile"/>
-   <addaction name="menuLinks"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="actionQuit">
@@ -206,31 +182,6 @@
   <action name="actionAbout">
    <property name="text">
     <string>About</string>
-   </property>
-  </action>
-  <action name="actionNitrokey_App">
-   <property name="text">
-    <string>Nitrokey App</string>
-   </property>
-  </action>
-  <action name="actionNitrokey_Storage_firmware">
-   <property name="text">
-    <string>Nitrokey Storage firmware</string>
-   </property>
-  </action>
-  <action name="actionNitrokey_Update_Tool">
-   <property name="text">
-    <string>Nitrokey Update Tool</string>
-   </property>
-  </action>
-  <action name="actionNitrokey_com">
-   <property name="text">
-    <string>Nitrokey.com</string>
-   </property>
-  </action>
-  <action name="actionNitrokey_Support_Forum">
-   <property name="text">
-    <string>Nitrokey Support Forum</string>
    </property>
   </action>
  </widget>

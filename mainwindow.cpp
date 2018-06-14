@@ -35,8 +35,8 @@ QString WELCOME = "Copyright 2018 Nitrokey UG (https://www.nitrokey.com). \n"
                 ;
 QString WELCOME2 =  "This tool allows to update Nitrokey Storage's firmware. "
                     "<ol><li>1. Please select "
-                    "<I>Configure -> Enable Firmware Update</I> in the Nitrokey App (select <i>Links menu->Nitrokey App</i> to open download site), </li>"
-                    "<li>2. Download the .hex file of the latest firmware version (select <i>Links menu->Nitrokey Storage firmware</i> to open download site), </li>"
+                    "<I>Configure -> Enable Firmware Update</I> in the Nitrokey App, </li>"
+                    "<li>2. Download the .hex file of the latest firmware version, </li>"
                     "<li>3. Select the firmware file with 'Select firmware file',"
                     "<li>4. Start the procedure by pressing 'Update firmware' button."
                     "</ol>"
@@ -113,7 +113,6 @@ void MainWindow::timer_device_count(){
     state.device_connected.update_mode = connection.count_devices_in_update_mode() > 0;
     state.device_connected.production_mode = connection.count_devices_in_production_mode() > 0;
 
-    ui->cb_device_connected->setChecked(state.device_connected.update_mode);
     if (last_status != state.device_connected_raw){
         if(state.device_connected.production_mode && !state.finished_with_success){
             logUI("Nitrokey Storage detected in Production mode. Please enable Firmware Update mode in Nitrokey App first (Configure -> Enable Firmware Update).");
@@ -143,8 +142,7 @@ void MainWindow::on_btn_select_file_clicked()
     state.firmware_file.selected = launchInThread([&filename](){
         QFileInfo check_file(filename);
         return check_file.exists() && check_file.isFile();
-    });
-    ui->cb_file_selected->setChecked(state.firmware_file.selected);
+    });    
     logUI("Set file " + filename);
 }
 
@@ -325,32 +323,6 @@ void MainWindow::on_actionAbout_triggered()
 {
     AboutDialog a;
     a.exec();
-}
-
-#include <QDesktopServices>
-void MainWindow::on_actionNitrokey_Update_Tool_triggered()
-{
-    QDesktopServices::openUrl(QUrl("https://github.com/Nitrokey/nitrokey-update-tool/releases"));
-}
-
-void MainWindow::on_actionNitrokey_Storage_firmware_triggered()
-{
-    QDesktopServices::openUrl(QUrl("https://github.com/Nitrokey/nitrokey-storage-firmware/releases"));
-}
-
-void MainWindow::on_actionNitrokey_App_triggered()
-{
-    QDesktopServices::openUrl(QUrl("https://github.com/Nitrokey/nitrokey-app/releases"));
-}
-
-void MainWindow::on_actionNitrokey_com_triggered()
-{
-    QDesktopServices::openUrl(QUrl("https://www.nitrokey.com"));
-}
-
-void MainWindow::on_actionNitrokey_Support_Forum_triggered()
-{
-    QDesktopServices::openUrl(QUrl("https://support.nitrokey.com/c/nitrokey-support"));
 }
 
 void MainWindow::on_btn_quit_clicked()
